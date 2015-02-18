@@ -28,7 +28,26 @@ namespace Hockey.Model
             players.Add(player);
         }
 
+        public void AddTeamPlayer(TeamPlayer teamPlayer)
+        {
+            teamPlayer.Id = teamPlayers.Count + 1;
+            teamPlayers.Add(teamPlayer);
+        }
+
+        public Team GetTeam(string teamName)
+        {
+            foreach (Team team in teams) 
+            {
+                if (team.Name == teamName)
+                {
+                    return team;
+                }
+            }
+            throw new Exception("Team name does not match any teams: " + teamName);
+        }
+
         public IEnumerable<Team> Teams { get { return teams; } }
         public IEnumerable<Player> Players { get { return players; } }
+        public IEnumerable<TeamPlayer> TeamPlayers { get { return teamPlayers; } }
     }
 }

@@ -5,7 +5,7 @@ CREATE TABLE Hockey.Player (
 	Name           VARCHAR(64) NOT NULL,
 	Position       VARCHAR(10) NOT NULL,
 	JerseyNumber   INT NOT NULL,
-	DateOfBirth    DATE NOT NULL,
+	DateOfBirth    DATE NULL,
 	BirthPlace     VARCHAR(64) NOT NULL,
 	Handedness     CHAR(1) NOT NULL,
 	Height         INT NOT NULL,

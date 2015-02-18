@@ -47,8 +47,8 @@ namespace Hockey.Database
             InsertToPlayerTable(hockeyModel.Players);
             //InsertToGameTable(hockeyModel.Games);
             //InsertToPointTable(hockeyModel.Points);
+            InsertToTeamPlayerTable(hockeyModel.TeamPlayers);
             //InsertToDraftPositionTable(hockeyModel.DraftPositions);
-            //InsertToTeamPlayerTable(hockeyModel.TeamsPlayers);
             //InsertToGamePlayerTable(hockeyModel.GamePlayers);
         }
 
@@ -110,6 +110,35 @@ INSERT INTO Hockey.Team (
                 cmd.SetInArg("@Abbreviation", team.Abbreviation);
                 cmd.SetInArg("@League", team.League);
                 cmd.SetInArg("@Division", team.Division);
+
+                cmd.ExecuteInsertUpdateDelete();
+            }
+        }
+
+        private void InsertToTeamPlayerTable(IEnumerable<TeamPlayer> teamPlayers)
+        {
+            Log.Debug("Inserting to TeamPlayer Table");
+            foreach (var teamPlayer in teamPlayers)
+            {
+                InsertTeamPlayerRow(teamPlayer);
+            }
+        }
+
+        private void InsertTeamPlayerRow(TeamPlayer teamPlayer)
+        {
+            using (var cmd = new SqlCmdExt(ConnectionString))
+            {
+                cmd.CreateCmd(@"
+INSERT INTO Hockey.TeamPlayer (
+    Id, StartDate, EndDate, PlayerId, TeamId
+) VALUES (
+    @Id, @StartDate, @EndDate, @PlayerId, @TeamId
+)");
+                cmd.SetInArg("@Id", teamPlayer.Id);
+                cmd.SetInArg("@StartDate", teamPlayer.StartDate);
+                cmd.SetInArg("@EndDate", teamPlayer.EndDate);
+                cmd.SetInArg("@PlayerId", teamPlayer.PlayerId);
+                cmd.SetInArg("@TeamId", teamPlayer.TeamId);
 
                 cmd.ExecuteInsertUpdateDelete();
             }

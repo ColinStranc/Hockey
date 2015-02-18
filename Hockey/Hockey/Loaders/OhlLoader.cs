@@ -39,19 +39,17 @@ namespace Hockey.Loaders
                 var aNode = childNode.SelectSingleNode(".//a");
                 if (aNode != null)
                 {
+                    Team team = hockeyModel.GetTeam(aNode.InnerText);
                     Log.DebugFormat("\n#######################\nSelected Node: {0}", aNode.InnerHtml);
                     String rosterLink = aNode.GetAttributeValue("href", null);
                     rosterLink = homePageLink + rosterLink;
                     Log.DebugFormat("link: {0}", rosterLink);
-                    ImportPlayersFromRoster(HtmlLoader.LoadPage(rosterLink));
+                    ImportPlayersFromRoster(HtmlLoader.LoadPage(rosterLink), team);
                     Log.Debug("###############");
 
                 }
-            }
-            
+            }  
         }
-
-
 
         protected override void ImportTeams()
         {
@@ -92,13 +90,7 @@ namespace Hockey.Loaders
                     };
                     hockeyModel.AddTeam(team);
                 }
-
             }
-
-        }
-
-        protected override void ImportTeamPlayers()
-        {
         }
     }
 }

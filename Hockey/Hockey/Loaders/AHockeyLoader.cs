@@ -22,12 +22,11 @@ namespace Hockey.Loaders
         public void ImportData()
         {
             Log.InfoFormat("#### Import of {0} starting #####", LeagueName);
-            ImportPlayers();
             ImportTeams();
-            //ImportTeamPlayers();
+            ImportPlayers();
         }
 
-        public void ImportPlayersFromRoster(HtmlDocument rosterPage)
+        public void ImportPlayersFromRoster(HtmlDocument rosterPage, Team team)
         {
             var rosterList = rosterPage.DocumentNode.SelectSingleNode(
                 "//div[@id='rosterBlock']"
@@ -48,7 +47,7 @@ namespace Hockey.Loaders
                 var trNodes = tBodyNode.SelectNodes("tr");
                 foreach (var trNode in trNodes)
                 {
-                    ImportPlayer(trNode);
+                    ImportPlayer(trNode, team);
                 }
                 
                 if (i >= 3) break;
@@ -57,7 +56,7 @@ namespace Hockey.Loaders
             
         }
 
-        private void ImportPlayer(HtmlNode trNode)
+        private void ImportPlayer(HtmlNode trNode, Team team)
         {
 
             var tdNodes = trNode.SelectNodes("td");
@@ -75,11 +74,20 @@ namespace Hockey.Loaders
             };
             hockeyModel.AddPlayer(player);
             Log.DebugFormat("player1: {0}", player);
+
+            TeamPlayer teamPlayer = new TeamPlayer()
+            {
+                StartDate = DateTime.Now,
+                EndDate = null,
+                PlayerId = player.Id,
+                TeamId = team.Id
+            };
+            hockeyModel.AddTeamPlayer(teamPlayer);
+
         }
 
         protected abstract void ImportPlayers();
         protected abstract void ImportTeams();
-        protected abstract void ImportTeamPlayers();
         protected abstract string LeagueName{get;}
 
     }

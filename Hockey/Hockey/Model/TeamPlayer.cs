@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Hockey.Model
 {
-    class TeamPlayer
+    public class TeamPlayer
     {
         public int Id { get; set; }
         public DateTime StartDate { get; set; }
