@@ -8,6 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Hockey.Utility;
 
+
+/*
+ * I'm expecting to throw Import Player Methods into the child class'.
+ * */
+
 namespace Hockey.Loaders
 {
     public abstract class AHockeyLoader
@@ -19,11 +24,13 @@ namespace Hockey.Loaders
         }
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(AHockeyLoader));
+
         public void ImportData()
         {
             Log.InfoFormat("#### Import of {0} starting #####", LeagueName);
             ImportTeams();
             ImportPlayers();
+            ImportGames();
         }
 
         public void ImportPlayersFromRoster(HtmlDocument rosterPage, Team team)
@@ -31,18 +38,14 @@ namespace Hockey.Loaders
             var rosterList = rosterPage.DocumentNode.SelectSingleNode(
                 "//div[@id='rosterBlock']"
                 );
-            Log.Debug("----- RosterBlock -----");
-            //Log.Debug(rosterList.InnerHtml);
-
+            
             var rosterTables = rosterList.SelectNodes(
                 ".//tbody"
                 );
             int i = 1;
             foreach (var tBodyNode in rosterTables)
             {
-                Log.Debug("--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--");
-                Log.Debug(tBodyNode.InnerHtml);
-                Log.Debug("--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--");
+                Log.DebugFormat("----------------------{0} Players of One Position (Forward/Goalie/Defense)------------------------\n{1}", team.Name, tBodyNode.InnerHtml);
 
                 var trNodes = tBodyNode.SelectNodes("tr");
                 foreach (var trNode in trNodes)
@@ -60,7 +63,8 @@ namespace Hockey.Loaders
         {
 
             var tdNodes = trNode.SelectNodes("td");
-            
+
+            Log.InfoFormat("Creating Player Object For {0}", tdNodes[1].InnerText);
             Player player = new Player()
             {
                 JerseyNumber = int.Parse(tdNodes[0].InnerText),
@@ -69,11 +73,11 @@ namespace Hockey.Loaders
                 Handedness = tdNodes[3].InnerText[0],
                 Height = Conversions.HeightMixedImperialtoInches(tdNodes[4].InnerText),
                 Weight = Conversions.SafeParseInt(tdNodes[5].InnerText, 0),
-                DateOfBirth = Conversions.DateStringToDateTime(tdNodes[6].InnerText),
+                DateOfBirth = Conversions.DateStringToDateTimeMmmDYyyy(tdNodes[6].InnerText),
                 BirthPlace = tdNodes[7].InnerText
             };
             hockeyModel.AddPlayer(player);
-            Log.DebugFormat("player1: {0}", player);
+            Log.DebugFormat("player: {0}", player);
 
             TeamPlayer teamPlayer = new TeamPlayer()
             {
@@ -83,11 +87,13 @@ namespace Hockey.Loaders
                 TeamId = team.Id
             };
             hockeyModel.AddTeamPlayer(teamPlayer);
+            Log.DebugFormat("teamPlayer: {0}", teamPlayer);
 
         }
 
         protected abstract void ImportPlayers();
         protected abstract void ImportTeams();
+        protected abstract void ImportGames();
         protected abstract string LeagueName{get;}
 
     }

@@ -13,5 +13,11 @@ namespace Hockey.Model
         public string Abbreviation { get; set; }
         public string League { get; set; }
         public string Division { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("Id: {0}, Name: {1}, Abbreviation: {2}, League: {3}, Division: {4}",
+                Id, Name, Abbreviation, League, Division);
+        }
     }
 }

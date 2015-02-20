@@ -34,6 +34,12 @@ namespace Hockey.Model
             teamPlayers.Add(teamPlayer);
         }
 
+        public void AddGame(Game game)
+        {
+            game.Id = games.Count + 1;
+            games.Add(game);
+        }
+
         public Team GetTeam(string teamName)
         {
             foreach (Team team in teams) 
@@ -45,9 +51,44 @@ namespace Hockey.Model
             }
             throw new Exception("Team name does not match any teams: " + teamName);
         }
+        
+        /* GetTeamIdFromPartialName and GetTeam to be merged */
 
+        public int GetTeamIdFromPartialName(string partialTeamName)
+        {
+            foreach(Team team in teams)
+            {
+                
+                bool isTeam = true;
+
+                if (partialTeamName.Length > team.Name.Length)
+                {
+                    isTeam = false;
+                }
+                else
+                {
+                    for (int i = 0; i < partialTeamName.Length; i++)
+                    {
+                        if (team.Name[i] != partialTeamName[i])
+                        {
+                            isTeam = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (isTeam == true)
+                {
+                    return team.Id;
+                }
+                
+            }
+            throw new Exception("Team name does not match any teams: " + partialTeamName);
+        }
         public IEnumerable<Team> Teams { get { return teams; } }
         public IEnumerable<Player> Players { get { return players; } }
         public IEnumerable<TeamPlayer> TeamPlayers { get { return teamPlayers; } }
+        public IEnumerable<Game> Games { get { return games; } }
+
     }
 }

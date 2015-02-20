@@ -9,6 +9,10 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
+/*
+ * Import To Row Function should be abstracted
+ * */
+
 
 namespace Hockey.Database
 {
@@ -32,20 +36,23 @@ namespace Hockey.Database
 
         private void DeleteExistingRows()
         {
+            Log.Info("#### Emptying Existing Rows. ####");
             string[] tableNames = { "TeamPlayer", "GamePlayer", "Point", "Game", "DraftPosition", "Team", "Player" };
 
             foreach (var tableName in tableNames) {
-               EmptyTable(tableName);
+                Log.InfoFormat("Emptying {0} Table", tableName);
+                EmptyTable(tableName);
             }
             
         }
 
         private void InsertNewRows()
         {
+            Log.Info("#### Inserting New Rows. ####");
 
             InsertToTeamTable(hockeyModel.Teams);
             InsertToPlayerTable(hockeyModel.Players);
-            //InsertToGameTable(hockeyModel.Games);
+            InsertToGameTable(hockeyModel.Games);
             //InsertToPointTable(hockeyModel.Points);
             InsertToTeamPlayerTable(hockeyModel.TeamPlayers);
             //InsertToDraftPositionTable(hockeyModel.DraftPositions);
@@ -54,15 +61,19 @@ namespace Hockey.Database
 
         private void InsertToPlayerTable(IEnumerable<Player> players)
         {
-            Log.Debug("Inserting to Player Table");
+            Log.Info("Inserting to Player Table.");
+
             foreach (var player in players)
             {
                 InsertPlayerRow(player);
             }
+            Log.Info("Finished Inserting to Player Table.\n");
         }
 
         private void InsertPlayerRow(Player player)
         {
+            Log.InfoFormat("Inserting {0} ({1})", player.Name, player.Id);
+
             using (var cmd = new SqlCmdExt(ConnectionString))
             {
                 cmd.CreateCmd(@"
@@ -88,15 +99,18 @@ INSERT INTO Hockey.Player (
 
         private void InsertToTeamTable(IEnumerable<Team> teams)
         {
-            Log.Debug("Inserting to Team Table");
+            Log.Info("Inserting to Team Table.");
             foreach (var team in teams)
             {
                 InsertTeamRow(team);
             }
+            Log.Info("Finished Inserting to Team Table.\n");
         }
 
         private void InsertTeamRow(Team team)
         {
+            Log.InfoFormat("Inserting {0} ({1})", team.Name, team.Id);
+
             using (var cmd = new SqlCmdExt(ConnectionString))
             {
                 cmd.CreateCmd(@"
@@ -117,15 +131,18 @@ INSERT INTO Hockey.Team (
 
         private void InsertToTeamPlayerTable(IEnumerable<TeamPlayer> teamPlayers)
         {
-            Log.Debug("Inserting to TeamPlayer Table");
+            Log.Info("Inserting to TeamPlayer Table.");
             foreach (var teamPlayer in teamPlayers)
             {
                 InsertTeamPlayerRow(teamPlayer);
             }
+            Log.Info("Finished Inserting to TeamPlayer Table.\n");
         }
 
         private void InsertTeamPlayerRow(TeamPlayer teamPlayer)
         {
+            Log.InfoFormat("Inserting TeamPlayer {0}", teamPlayer.Id);
+
             using (var cmd = new SqlCmdExt(ConnectionString))
             {
                 cmd.CreateCmd(@"
@@ -139,6 +156,41 @@ INSERT INTO Hockey.TeamPlayer (
                 cmd.SetInArg("@EndDate", teamPlayer.EndDate);
                 cmd.SetInArg("@PlayerId", teamPlayer.PlayerId);
                 cmd.SetInArg("@TeamId", teamPlayer.TeamId);
+
+                cmd.ExecuteInsertUpdateDelete();
+            }
+        }
+
+        private void InsertToGameTable(IEnumerable<Game> games) 
+        {
+            Log.Info("Inserting to Game Table.");
+            foreach (var game in games)
+            {
+                InsertToGameRow(game);
+            }
+            Log.Info("Finished Inserting to Game Table.\n");
+        }
+
+        private void InsertToGameRow(Game game)
+        {
+            Log.InfoFormat("Inserting Game {0}", game.Id);
+
+            using (var cmd = new SqlCmdExt(ConnectionString))
+            {
+                cmd.CreateCmd(@"
+INSERT INTO Hockey.Game (
+    Id, HomeTeamId, AwayTeamId, Season, SeasonType, GameDate, HomeScore, AwayScore
+) VALUES (
+    @Id, @HomeTeamId, @AwayTeamId, @Season, @SeasonType, @GameDate, @HomeScore, @AwayScore
+)");
+                cmd.SetInArg("@Id", game.Id);
+                cmd.SetInArg("@HomeTeamId", game.HomeTeamId);
+                cmd.SetInArg("@AwayTeamId", game.AwayTeamId);
+                cmd.SetInArg("@Season", game.Season);
+                cmd.SetInArg("@SeasonType", game.SeasonType);
+                cmd.SetInArg("@GameDate", game.GameDate);
+                cmd.SetInArg("@HomeScore", game.HomeScore);
+                cmd.SetInArg("@AwayScore", game.AwayScore);
 
                 cmd.ExecuteInsertUpdateDelete();
             }

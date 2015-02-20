@@ -26,10 +26,9 @@ namespace Hockey.Utility
                                      + int.Parse(heightInFeetAndInches[1]);
                 return heightInInches;
             }
-            
         }
 
-        public static DateTime? DateStringToDateTime(string dateAsString)
+        public static DateTime? DateStringToDateTimeMmmDYyyy(string dateAsString)
         {
             if (dateAsString == "")
             {
@@ -40,7 +39,12 @@ namespace Hockey.Utility
                 return DateTime.ParseExact(dateAsString, "MMM d, yyyy", null);
             }
         }
-
+        /*
+        public static DateTime DateStringToDateTimeYyyy_Mm_Dd(string dateAsString)
+        {
+            return 
+        }
+        */
         public static int SafeParseInt(string str, int retval)
         {
             if (str == "")
@@ -51,7 +55,6 @@ namespace Hockey.Utility
             {
                 return int.Parse(str);
             }
-
         }
     }
 }

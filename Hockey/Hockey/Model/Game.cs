@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Hockey.Model
 {
-    class Game
+    public class Game
     {
         public int Id { get; set; }
         public int HomeTeamId { get; set; }
@@ -16,5 +16,11 @@ namespace Hockey.Model
         public DateTime GameDate { get; set; }
         public int HomeScore { get; set; }
         public int AwayScore { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("Id: {0}, HomeTeamId: {1}, AwayteamId: {2}, Season: {3}, SeasonType: {4}, GameDate: {5}, HomeScore: {6}, AwayScore: {7}",
+                Id, HomeTeamId, AwayTeamId, Season, SeasonType, GameDate, HomeScore, AwayScore);
+        }
     }
 }

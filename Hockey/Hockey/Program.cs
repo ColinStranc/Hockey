@@ -11,6 +11,10 @@ using Hockey.Model;
 using Hockey.Loaders;
 using Hockey.Database;
 
+/*
+ * Be smarter with Log statements
+ * */
+
 namespace Hockey
 {
     class Program
@@ -23,6 +27,7 @@ namespace Hockey
         {
             try
             {
+                Log.Info("Starting Import Process.");
                 var hockeyModel = new HockeyModel();
                 //ImportHockeyModelFromDatabase(hockeyModel);
                 //ImportHockeyModelFromNhl(hockeyModel);
@@ -32,7 +37,7 @@ namespace Hockey
                 //ImportHockeyModelFromAhl(hockeyModel);
 
                 SaveHockeyModel(hockeyModel);
-                Log.Info("Lack of Exceptions");
+                Log.Info("Finsished With An Astounding Lack Of Exceptions");
             }
             catch (Exception e)
             {
@@ -52,17 +57,5 @@ namespace Hockey
             OhlLoader loader = new OhlLoader(hockeyModel);
             loader.ImportData();
         }
-
-        
-        /*
-        static void Main(string[] args)
-        {
-            Log.InfoFormat("Today {0} is a good day", DateTime.Now);
-            var doc = LoadPage("http://www.nhl.com/");
-            var sw = new StringWriter();
-            doc.Save(sw);
-            Log.InfoFormat(sw.ToString());
-        }
-         * */
     }
 }
